@@ -41,9 +41,9 @@ const ProfileCreateForm: React.FC<ProfileFormType> = ({ initialData }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const title = initialData ? 'Edit product' : 'Create Your Profile';
+  const title = initialData ? 'Edit wallet' : 'Create Your Profile';
   const description = initialData
-    ? 'Edit a product.'
+    ? 'Edit a wallet.'
     : 'To create your resume, we first need some basic information about you.';
   const [previousStep, setPreviousStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);

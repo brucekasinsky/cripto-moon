@@ -8,8 +8,8 @@ import { matchSorter } from 'match-sorter'; // For filtering
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-// Define the shape of Product data
-export type Product = {
+// Define the shape of Wallet data
+export type Wallet = {
   photo_url: string;
   name: string;
   description: string;
@@ -20,14 +20,14 @@ export type Product = {
   updated_at: string;
 };
 
-// Mock product data store
-export const fakeProducts = {
-  records: [] as Product[], // Holds the list of product objects
+// Mock wallet data store
+export const fakeWallets = {
+  records: [] as Wallet[], // Holds the list of wallet objects
 
   // Initialize with sample data
   initialize() {
-    const sampleProducts: Product[] = [];
-    function generateRandomProductData(id: number): Product {
+    const sampleWallets: Wallet[] = [];
+    function generateRandomWalletData(id: number): Wallet {
       const categories = [
         'Electronics',
         'Furniture',
@@ -36,7 +36,7 @@ export const fakeProducts = {
         'Groceries',
         'Books',
         'Jewelry',
-        'Beauty Products'
+        'Beauty Wallets'
       ];
 
       return {
@@ -47,7 +47,7 @@ export const fakeProducts = {
           .between({ from: '2022-01-01', to: '2023-12-31' })
           .toISOString(),
         price: parseFloat(faker.commerce.price({ min: 5, max: 500, dec: 2 })),
-        photo_url: `https://api.slingacademy.com/public/sample-products/${id}.png`,
+        photo_url: `https://api.slingacademy.com/public/sample-wallets/${id}.png`,
         category: faker.helpers.arrayElement(categories),
         updated_at: faker.date.recent().toISOString()
       };
@@ -55,13 +55,13 @@ export const fakeProducts = {
 
     // Generate remaining records
     for (let i = 1; i <= 20; i++) {
-      sampleProducts.push(generateRandomProductData(i));
+      sampleWallets.push(generateRandomWalletData(i));
     }
 
-    this.records = sampleProducts;
+    this.records = sampleWallets;
   },
 
-  // Get all products with optional category filtering and search
+  // Get all wallets with optional category filtering and search
   async getAll({
     categories = [],
     search
@@ -69,27 +69,27 @@ export const fakeProducts = {
     categories?: string[];
     search?: string;
   }) {
-    let products = [...this.records];
+    let wallets = [...this.records];
 
-    // Filter products based on selected categories
+    // Filter wallets based on selected categories
     if (categories.length > 0) {
-      products = products.filter((product) =>
-        categories.includes(product.category)
+      wallets = wallets.filter((wallet) =>
+        categories.includes(wallet.category)
       );
     }
 
     // Search functionality across multiple fields
     if (search) {
-      products = matchSorter(products, search, {
+      wallets = matchSorter(wallets, search, {
         keys: ['name', 'description', 'category']
       });
     }
 
-    return products;
+    return wallets;
   },
 
   // Get paginated results with optional category filtering and search
-  async getProducts({
+  async getWallets({
     page = 1,
     limit = 10,
     categories,
@@ -102,15 +102,15 @@ export const fakeProducts = {
   }) {
     await delay(1000);
     const categoriesArray = categories ? categories.split('.') : [];
-    const allProducts = await this.getAll({
+    const allWallets = await this.getAll({
       categories: categoriesArray,
       search
     });
-    const totalProducts = allProducts.length;
+    const totalWallets = allWallets.length;
 
     // Pagination logic
     const offset = (page - 1) * limit;
-    const paginatedProducts = allProducts.slice(offset, offset + limit);
+    const paginatedWallets = allWallets.slice(offset, offset + limit);
 
     // Mock current time
     const currentTime = new Date().toISOString();
@@ -120,24 +120,24 @@ export const fakeProducts = {
       success: true,
       time: currentTime,
       message: 'Sample data for testing and learning purposes',
-      total_products: totalProducts,
+      total_wallets: totalWallets,
       offset,
       limit,
-      products: paginatedProducts
+      wallets: paginatedWallets
     };
   },
 
-  // Get a specific product by its ID
-  async getProductById(id: number) {
+  // Get a specific wallet by its ID
+  async getWalletById(id: number) {
     await delay(1000); // Simulate a delay
 
-    // Find the product by its ID
-    const product = this.records.find((product) => product.id === id);
+    // Find the wallet by its ID
+    const wallet = this.records.find((wallet) => wallet.id === id);
 
-    if (!product) {
+    if (!wallet) {
       return {
         success: false,
-        message: `Product with ID ${id} not found`
+        message: `Wallet with ID ${id} not found`
       };
     }
 
@@ -147,11 +147,11 @@ export const fakeProducts = {
     return {
       success: true,
       time: currentTime,
-      message: `Product with ID ${id} found`,
-      product
+      message: `Wallet with ID ${id} found`,
+      wallet
     };
   }
 };
 
-// Initialize sample products
-fakeProducts.initialize();
+// Initialize sample wallets
+fakeWallets.initialize();

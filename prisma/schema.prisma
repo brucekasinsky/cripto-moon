@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DB_STRING")
+}
+
+model Wallet {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  address     String   @unique
+  name        String?
+  description String?
+  isActive    Boolean  @default(true)
+  isFollowing Boolean  @default(false)
+  
+  // Hyperliquid specific data for real-time tracking
+  accountId   String?  // Hyperliquid Account ID
+  chainId     String?  // Chain where the wallet operates (arbitrum, base, etc.)
+  accountName String?  // Account name on Hyperliquid
+  
+  // Hyperliquid API data
+  totalValue  Float?   // Total portfolio value in USD
+  pnl24h      Float?   // 24h P&L
+  pnl7d       Float?   // 7d P&L
+  pnl30d      Float?   // 30d P&L
+  
+  // Trading data
+  totalTrades Int?     // Total number of trades
+  winRate     Float?   // Win rate percentage
+  avgTradeSize Float?  // Average trade size
+  
+  // Position data
+  openPositions Int?   // Number of open positions
+  totalPositions Int?  // Total number of positions
+  
+  // Real-time tracking settings
+  trackRealtime Boolean @default(false)  // Enable real-time tracking
+  lastTradeAt   DateTime?  // Last trade timestamp
+  lastPositionUpdate DateTime?  // Last position update
+  
+  // Metadata
+  lastUpdated DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // User who added this wallet
+  userId      String?
+  
+  // Indexes for better performance
+  @@index([isFollowing])
+  @@index([userId])
+  @@index([lastUpdated])
+  @@index([trackRealtime])
+  @@index([chainId])
+}
+
+model UserWallet {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  // User identification
+  userId      String   @unique // Clerk user ID
+  
+  // Hyperliquid wallet connection
+  walletAddress String? // User's Hyperliquid wallet address
+  accountId     String? // Hyperliquid account ID
+  privateKey    String? // Encrypted private key
+  
+  // Connection status
+  isConnected   Boolean  @default(false)
+  lastConnected DateTime?
+  
+  // Copy trading settings
+  maxTradeSize     Float   @default(1000)    // Maximum trade size in USDC
+  riskPercentage   Float   @default(2)       // Risk percentage per trade
+  maxOpenPositions Int     @default(5)       // Maximum open positions
+  autoCopyEnabled  Boolean @default(true)    // Auto copy trading enabled
+  stopLossEnabled  Boolean @default(true)    // Stop loss protection enabled
+  
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([isConnected])
+}
