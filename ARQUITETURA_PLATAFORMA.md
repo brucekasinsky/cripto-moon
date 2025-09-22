@@ -283,3 +283,4 @@ src/
 *Esta arquitetura será implementada gradualmente seguindo o roadmap definido no plano de negócio.*
 
 
+

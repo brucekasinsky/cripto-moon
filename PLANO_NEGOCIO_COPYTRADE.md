@@ -313,3 +313,4 @@
 *Este documento será atualizado conforme o desenvolvimento progride e novas funcionalidades são identificadas.*
 
 
+

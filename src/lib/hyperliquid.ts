@@ -735,4 +735,241 @@ export class HyperliquidService {
 
     return { success: true, data: mockPositions };
   }
+
+  /**
+   * Get wallet equity history for chart data
+   */
+  static async getWalletEquityHistory(address: string, startTime?: number): Promise<HyperliquidAPIResponse<any[]>> {
+    try {
+      console.log('Fetching wallet equity history for:', address);
+      
+      // Get current balance first to use as baseline
+      const balanceResponse = await this.makeRequest('/info', {
+        type: 'clearinghouseState',
+        user: address
+      });
+
+                // Get userFills to calculate historical equity changes
+                const fillsResponse = await this.makeRequest('/info', {
+                  type: 'userFills',
+                  user: address,
+                  startTime: startTime || (Date.now() - 90 * 24 * 60 * 60 * 1000)
+                });
+
+                if (balanceResponse.success && balanceResponse.data && fillsResponse.success && fillsResponse.data && Array.isArray(fillsResponse.data)) {
+                  const currentBalance = parseFloat((balanceResponse.data as any).marginSummary?.accountValue || '0');
+                  const fills = fillsResponse.data;
+                  console.log('Current balance:', currentBalance, 'Fills:', fills.length);
+                  
+                  // Sort fills by time chronologically
+                  const sortedFills = fills.sort((a: any, b: any) => parseInt(a.time || '0') - parseInt(b.time || '0'));
+                  
+                  // HYPERDASH APPROACH: Simple cumulative PnL from trades
+                  // The key insight: Hyperdash shows PnL = 0 at the end because they normalize
+                  // the data so the current moment is the reference point
+                  
+                  const dailyData: { [key: string]: { pnl: number, timestamp: string } } = {};
+                  
+                  // Calculate cumulative PnL from trades (this is what we want to show)
+                  let cumulativePnL = 0;
+                  
+                  // Start with PnL = 0 (beginning of period) - use first trade date from real API data
+                  if (sortedFills.length > 0) {
+                    const firstTradeDate = new Date(parseInt(sortedFills[0].time || '0'));
+                    const dayBefore = new Date(firstTradeDate);
+                    dayBefore.setDate(dayBefore.getDate() - 1);
+                    const startDateKey = dayBefore.toISOString().split('T')[0]; // YYYY-MM-DD format
+                    dailyData[startDateKey] = {
+                      pnl: 0,
+                      timestamp: startDateKey
+                    };
+                    console.log('Starting PnL calculation from:', startDateKey, 'based on first trade:', firstTradeDate.toISOString().split('T')[0]);
+                  }
+                  
+                  // Process fills chronologically and accumulate PnL
+                  // Don't group by day - show every trade point like Hyperdash
+                  sortedFills.forEach((fill: any) => {
+                    const fillPnl = parseFloat(fill.closedPnl || '0');
+                    const date = new Date(parseInt(fill.time || '0'));
+                    const timestamp = date.toISOString().split('T')[0]; // YYYY-MM-DD format
+                    
+                    cumulativePnL += fillPnl;
+                    
+                    // Add every trade point (don't group by day)
+                    dailyData[`${timestamp}_${fill.time}`] = {
+                      pnl: cumulativePnL,
+                      timestamp: timestamp
+                    };
+                  });
+                  
+                  // HYPERDASH NORMALIZATION: Normalize so the final value is 0
+                  const finalPnL = cumulativePnL;
+                  console.log('Final cumulative PnL before normalization:', finalPnL);
+                  
+                  // Adjust all values so the final PnL is 0
+                  Object.keys(dailyData).forEach(key => {
+                    dailyData[key].pnl = dailyData[key].pnl - finalPnL;
+                  });
+                  
+                  console.log('Applied Hyperdash normalization - final PnL now:', dailyData[Object.keys(dailyData)[Object.keys(dailyData).length - 1]]?.pnl);
+                  
+                  // Add current day point to show "today" on the chart
+                  const today = new Date().toISOString().split('T')[0];
+                  const lastTradeDate = sortedFills.length > 0 ? new Date(parseInt(sortedFills[sortedFills.length - 1].time || '0')).toISOString().split('T')[0] : today;
+                  
+                  // Only add today if it's after the last trade
+                  if (today > lastTradeDate) {
+                    dailyData[`${today}_today`] = {
+                      pnl: 0, // Final normalized PnL should be 0
+                      timestamp: today
+                    };
+                    console.log('Added today point:', today, 'with PnL: 0 (normalized)');
+                  }
+                  
+                  // Fill in all dates between first and last to avoid gaps in chart
+                  const allDates: { [key: string]: { pnl: number, timestamp: string } } = {};
+                  
+                  // Get date range
+                  const dates = Object.values(dailyData).map(d => d.timestamp).sort();
+                  if (dates.length > 0) {
+                    const startDate = new Date(dates[0]);
+                    const endDate = new Date(dates[dates.length - 1]);
+                    
+                    // First, add all actual trade data
+                    Object.values(dailyData).forEach(day => {
+                      allDates[day.timestamp] = day;
+                    });
+                    
+                    // Then fill gaps with last known value
+                    let lastKnownPnL = 0;
+                    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                      const dateKey = d.toISOString().split('T')[0];
+                      
+                      if (allDates[dateKey]) {
+                        // Update last known value
+                        lastKnownPnL = allDates[dateKey].pnl;
+                      } else {
+                        // Fill gap with last known value
+                        allDates[dateKey] = {
+                          pnl: lastKnownPnL,
+                          timestamp: dateKey
+                        };
+                      }
+                    }
+                  }
+                  
+                  // Convert to array and sort by date
+                  const equityHistory = Object.values(allDates)
+                    .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+                    .map(day => ({
+                      totalValue: day.pnl, // This is the PnL (cumulative from trades)
+                      pnl: day.pnl,
+                      timestamp: day.timestamp
+                    }));
+        
+                  console.log('Wallet equity history processed:', equityHistory.length, 'days');
+                  console.log('Sample equity history data:', equityHistory.slice(0, 5));
+                  console.log('Final PnL values:', equityHistory.map(h => ({ date: h.timestamp, pnl: h.pnl })));
+                  return { success: true, data: equityHistory };
+      }
+
+      return { success: false, error: 'No equity history data received' };
+    } catch (error) {
+      console.error('Error fetching wallet equity history:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      };
+    }
+  }
+
+  /**
+   * Get current wallet balance and PnL
+   */
+  static async getWalletBalance(address: string): Promise<HyperliquidAPIResponse<any>> {
+    try {
+      console.log('Fetching wallet balance for:', address);
+      
+      const response = await this.makeRequest('/info', {
+        type: 'clearinghouseState',
+        user: address
+      });
+
+      if (response.success && response.data) {
+        const accountState = response.data as any;
+        const balance = {
+          totalValue: parseFloat(accountState.marginSummary?.accountValue || '0'),
+          pnl24h: parseFloat(accountState.marginSummary?.totalPnl || '0'),
+          pnlPercentage: parseFloat(accountState.marginSummary?.totalPnlPercent || '0')
+        };
+        
+        console.log('Wallet balance loaded:', balance);
+        return { success: true, data: balance };
+      }
+
+      return { success: false, error: 'No balance data received' };
+    } catch (error) {
+      console.error('Error fetching wallet balance:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      };
+    }
+  }
+
+  /**
+   * Get wallet trading statistics
+   */
+  static async getWalletStats(address: string, startTime?: number): Promise<HyperliquidAPIResponse<any>> {
+    try {
+      console.log('Fetching wallet stats for:', address);
+      
+      // Get fills for statistics
+      const fillsResponse = await this.makeRequest('/info', {
+        type: 'userFills',
+        user: address,
+        startTime: startTime || (Date.now() - 30 * 24 * 60 * 60 * 1000) // 30 days
+      });
+
+      // Get open orders for position count
+      const openOrdersResponse = await this.makeRequest('/info', {
+        type: 'openOrders',
+        user: address
+      });
+
+      if (fillsResponse.success && fillsResponse.data && Array.isArray(fillsResponse.data)) {
+        const fills = fillsResponse.data;
+        const openOrders = openOrdersResponse.success ? openOrdersResponse.data : [];
+        
+        // Calculate statistics
+        const totalTrades = fills.length;
+        const winningTrades = fills.filter((fill: any) => parseFloat(fill.closedPnl || '0') > 0).length;
+        const winRate = totalTrades > 0 ? (winningTrades / totalTrades) * 100 : 0;
+        
+        const totalVolume = fills.reduce((sum: number, fill: any) => {
+          return sum + (parseFloat(fill.sz || '0') * parseFloat(fill.px || '0'));
+        }, 0);
+        
+        const avgTrade = totalTrades > 0 ? totalVolume / totalTrades : 0;
+        
+        const stats = {
+          openPositions: Array.isArray(openOrders) ? openOrders.length : 0,
+          winRate,
+          avgTrade,
+          totalVolume
+        };
+        
+        console.log('Wallet stats calculated:', stats);
+        return { success: true, data: stats };
+      }
+
+      return { success: false, error: 'No stats data received' };
+    } catch (error) {
+      console.error('Error fetching wallet stats:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      };
+    }
+  }
 }

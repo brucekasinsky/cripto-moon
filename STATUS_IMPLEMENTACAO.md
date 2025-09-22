@@ -252,3 +252,4 @@
 *Status: 75% implementado - MVP funcional*
 
 
+
