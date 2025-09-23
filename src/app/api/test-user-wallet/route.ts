@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    console.log('Testing UserWallet model...');
+    // console.log('Testing UserWallet model...');
     
     // Try to find any user wallet
     const userWallets = await prisma.userWallet.findMany({
       take: 1
     });
     
-    console.log('✅ UserWallet model exists and is accessible');
+    // console.log('✅ UserWallet model exists and is accessible');
     
     return NextResponse.json({
       success: true,
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('❌ Error testing UserWallet:', error);
+    // console.error('❌ Error testing UserWallet:', error);
     
     return NextResponse.json({
       success: false,

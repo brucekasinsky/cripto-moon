@@ -14,7 +14,8 @@ export default async function WalletListingPage({}: WalletListingPage) {
   const isActive = searchParamsCache.get('isActive');
 
   // Fetch wallets from API
-  const apiUrl = new URL('/api/wallets', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const apiUrl = new URL('/api/wallets', baseUrl);
   apiUrl.searchParams.set('page', page?.toString() || '1');
   apiUrl.searchParams.set('limit', pageLimit?.toString() || '10');
   if (search) apiUrl.searchParams.set('search', search);

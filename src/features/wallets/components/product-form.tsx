@@ -74,7 +74,7 @@ export default function WalletForm({
     values: defaultValues
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(_values: z.infer<typeof formSchema>) {
     // Form submission logic would be implemented here
   }
 

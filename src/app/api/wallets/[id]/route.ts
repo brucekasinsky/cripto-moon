@@ -18,7 +18,7 @@ export async function GET(
 
     return NextResponse.json(result.data);
   } catch (error) {
-    console.error('Error in GET /api/wallets/[id]:', error);
+    // console.error('Error in GET /api/wallets/[id]:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -66,7 +66,7 @@ export async function PUT(
       { status: 400 }
     );
   } catch (error) {
-    console.error('Error in PUT /api/wallets/[id]:', error);
+    // console.error('Error in PUT /api/wallets/[id]:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -91,7 +91,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Wallet deleted successfully' });
   } catch (error) {
-    console.error('Error in DELETE /api/wallets/[id]:', error);
+    // console.error('Error in DELETE /api/wallets/[id]:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

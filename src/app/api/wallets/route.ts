@@ -1,9 +1,9 @@
 import { WalletService } from '@/lib/wallet-service';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(_request.url);
     
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(result.data);
   } catch (error) {
-    console.error('Error in GET /api/wallets:', error);
+    // console.error('Error in GET /api/wallets:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -40,9 +40,9 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await _request.json();
     const { address, name, description, userId } = body;
 
     if (!address) {
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result.data, { status: 201 });
   } catch (error) {
-    console.error('Error in POST /api/wallets:', error);
+    // console.error('Error in POST /api/wallets:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

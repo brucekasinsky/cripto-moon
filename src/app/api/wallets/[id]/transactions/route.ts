@@ -21,16 +21,16 @@ export async function GET(
     const wallet = walletResponse.data;
 
     // Fetch all transactions from Hyperliquid
-    console.log(`Fetching all trades for wallet: ${wallet.address}`);
+    // console.log(`Fetching all trades for wallet: ${wallet.address}`);
     const tradesResponse = await HyperliquidService.getRealtimeTrades(
       wallet.address,
       wallet.accountId || undefined
     );
 
-    console.log('Trades response:', tradesResponse);
+    // console.log('Trades response:', tradesResponse);
 
     if (!tradesResponse.success) {
-      console.error('Failed to fetch trades:', tradesResponse.error);
+    // console.error('Failed to fetch trades:', tradesResponse.error);
       return NextResponse.json(
         { 
           success: false,
@@ -59,7 +59,7 @@ export async function GET(
       status: 'pending' // TODO: Implementar lógica de copytrade (pending/copied/failed)
     }));
 
-    console.log(`Transformed ${transactions.length} transactions`);
+    // console.log(`Transformed ${transactions.length} transactions`);
 
     // Sort by timestamp (most recent first)
     transactions.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
@@ -76,7 +76,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('Error fetching wallet transactions:', error);
+    // console.error('Error fetching wallet transactions:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

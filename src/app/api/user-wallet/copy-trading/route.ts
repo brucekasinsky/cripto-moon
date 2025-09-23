@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { UserWalletService } from '@/lib/user-wallet-service';
 
-export async function PUT(request: NextRequest) {
+export async function PUT(_request: NextRequest) {
   try {
     const { userId } = await auth();
     
@@ -13,7 +13,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    const body = await _request.json();
     const { 
       maxTradeSize,
       riskPercentage,
@@ -65,7 +65,7 @@ export async function PUT(request: NextRequest) {
       message: 'Copy trading settings updated successfully'
     });
   } catch (error) {
-    console.error('Error in PUT /api/user-wallet/copy-trading:', error);
+    // console.error('Error in PUT /api/user-wallet/copy-trading:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

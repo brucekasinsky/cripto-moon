@@ -3,9 +3,9 @@ import { Badge } from '@/components/ui/badge';
 import { DataTableColumnHeader } from '@/components/ui/table/data-table-column-header';
 import { Wallet } from '@/constants/data';
 import { Column, ColumnDef } from '@tanstack/react-table';
-import { CheckCircle2, XCircle, TrendingUp, TrendingDown, Eye, EyeOff, ExternalLink, Clock, Activity } from 'lucide-react';
+import { CheckCircle2, XCircle, TrendingUp, TrendingDown, Eye, EyeOff, Clock, Activity } from 'lucide-react';
 import { CellAction } from './cell-action';
-import { formatCurrency, formatPercentage, formatNumber } from '@/lib/utils';
+import { formatCurrency, formatPercentage } from '@/lib/utils';
 
 export const columns: ColumnDef<Wallet>[] = [
   {

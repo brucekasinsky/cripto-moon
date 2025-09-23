@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Wallet } from '@/constants/data';
 import { useWalletModal } from '../wallet-context';
-import { MoreHorizontal, Edit, Trash2, RefreshCw, Eye, EyeOff, ExternalLink, Activity } from 'lucide-react';
+import { MoreHorizontal, Trash2, RefreshCw, Eye, EyeOff, ExternalLink, Activity } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 

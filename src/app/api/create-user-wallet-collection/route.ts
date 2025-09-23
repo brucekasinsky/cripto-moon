@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
-    console.log('Creating UserWallet collection...');
+    // console.log('Creating UserWallet collection...');
     
     // Try to create a test user wallet to trigger collection creation
     const testWallet = await prisma.userWallet.create({
@@ -17,14 +17,14 @@ export async function POST(request: NextRequest) {
       }
     });
     
-    console.log('✅ UserWallet collection created successfully');
+    // console.log('✅ UserWallet collection created successfully');
     
     // Clean up - delete the test wallet
     await prisma.userWallet.delete({
       where: { id: testWallet.id }
     });
     
-    console.log('✅ Test wallet deleted successfully');
+    // console.log('✅ Test wallet deleted successfully');
     
     return NextResponse.json({
       success: true,
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('❌ Error creating UserWallet collection:', error);
+    // console.error('❌ Error creating UserWallet collection:', error);
     
     return NextResponse.json({
       success: false,

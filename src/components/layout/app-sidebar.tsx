@@ -65,7 +65,7 @@ export default function AppSidebar() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
   const [isMounted, setIsMounted] = React.useState(false);
-  const handleSwitchTenant = (_tenantId: string) => {
+  const handleSwitchTenant = () => {
     // Tenant switching functionality would be implemented here
   };
 

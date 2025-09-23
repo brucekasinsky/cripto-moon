@@ -65,7 +65,7 @@ export function WalletChart({ className, walletAddress }: WalletChartProps) {
     }
   };
 
-  const filterChartData = (data: ChartDataPoint[], filter: TimeFilter) => {
+  const filterChartData = useCallback((data: ChartDataPoint[], filter: TimeFilter) => {
     if (filter === 'All') {
       return data;
     }
@@ -75,14 +75,14 @@ export function WalletChart({ className, walletAddress }: WalletChartProps) {
       const pointTime = new Date(point.date).getTime();
       return pointTime >= filterTime;
     });
-  };
+  }, []);
 
   const fetchWalletData = useCallback(async () => {
     if (!walletAddress || hasLoadedData) return;
     
     setIsLoading(true);
     try {
-      console.log('Fetching ALL wallet chart data for:', walletAddress);
+    // console.log('Fetching ALL wallet chart data for:', walletAddress);
       
       // Fetch ALL data (90 days) only once
       const startTime = Date.now() - (90 * 24 * 60 * 60 * 1000); // 90 days
@@ -103,14 +103,14 @@ export function WalletChart({ className, walletAddress }: WalletChartProps) {
         }));
         
         setAllChartData(processedChartData);
-        console.log('All chart data processed:', processedChartData.length, 'points');
-        console.log('Sample processed data:', processedChartData.slice(0, 5));
-        console.log('PnL range:', {
-          min: Math.min(...processedChartData.map(d => d.totalValue)),
-          max: Math.max(...processedChartData.map(d => d.totalValue)),
-          first: processedChartData[0]?.totalValue,
-          last: processedChartData[processedChartData.length - 1]?.totalValue
-        });
+    // console.log('All chart data processed:', processedChartData.length, 'points');
+    // console.log('Sample processed data:', processedChartData.slice(0, 5));
+    // console.log('PnL range:', {
+    //   min: Math.min(...processedChartData.map(d => d.totalValue)),
+    //   max: Math.max(...processedChartData.map(d => d.totalValue)),
+    //   first: processedChartData[0]?.totalValue,
+    //   last: processedChartData[processedChartData.length - 1]?.totalValue
+    // });
       }
 
       // Process balance data
@@ -122,7 +122,7 @@ export function WalletChart({ className, walletAddress }: WalletChartProps) {
           pnl24h: balance.pnl24h,
           pnlPercentage: balance.pnlPercentage
         }));
-        console.log('Balance data loaded:', balance);
+    // console.log('Balance data loaded:', balance);
       }
 
       // Process stats data
@@ -135,7 +135,7 @@ export function WalletChart({ className, walletAddress }: WalletChartProps) {
           avgTrade: stats.avgTrade,
           totalVolume: stats.totalVolume
         }));
-        console.log('Stats data loaded:', stats);
+    // console.log('Stats data loaded:', stats);
       }
 
       setHasLoadedData(true);
@@ -144,7 +144,7 @@ export function WalletChart({ className, walletAddress }: WalletChartProps) {
       if (equityHistoryResponse.success || balanceResponse.success || statsResponse.success) {
         toast.success('Wallet data loaded successfully');
       } else {
-        console.log('All requests failed');
+    // console.log('All requests failed');
         toast.error('Failed to load wallet data');
       }
     } catch (error) {
@@ -166,9 +166,9 @@ export function WalletChart({ className, walletAddress }: WalletChartProps) {
     if (allChartData.length > 0) {
       const filtered = filterChartData(allChartData, selectedFilter);
       setFilteredChartData(filtered);
-      console.log(`Filtered data for ${selectedFilter}:`, filtered.length, 'points');
+    // console.log(`Filtered data for ${selectedFilter}:`, filtered.length, 'points');
     }
-  }, [allChartData, selectedFilter]);
+  }, [allChartData, selectedFilter, filterChartData]);
 
   // Handle filter change
   const handleFilterChange = (filter: TimeFilter) => {

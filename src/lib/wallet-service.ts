@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/db';
 import { HyperliquidService } from '@/lib/hyperliquid';
-import { HyperliquidWalletData } from '@/types/hyperliquid';
+// import { HyperliquidWalletData } from '@/types/hyperliquid';
 
 export class WalletService {
   /**

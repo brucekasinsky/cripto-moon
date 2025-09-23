@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { UserWalletService } from '@/lib/user-wallet-service';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const { userId } = await auth();
     
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       data: result.data
     });
   } catch (error) {
-    console.error('Error in GET /api/user-wallet:', error);
+    // console.error('Error in GET /api/user-wallet:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function PUT(request: NextRequest) {
+export async function PUT(_request: NextRequest) {
   try {
     const { userId } = await auth();
     
@@ -46,7 +46,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    const body = await _request.json();
     const { 
       walletAddress, 
       accountId, 
@@ -103,7 +103,7 @@ export async function PUT(request: NextRequest) {
       data: result.data
     });
   } catch (error) {
-    console.error('Error in PUT /api/user-wallet:', error);
+    // console.error('Error in PUT /api/user-wallet:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -1,4 +1,3 @@
-import { Icons } from '@/components/icons';
 import type { NavItem } from '@/types';
 
 export type Wallet = {

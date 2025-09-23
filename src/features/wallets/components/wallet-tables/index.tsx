@@ -35,11 +35,13 @@ function WalletTableContent({ data, totalItems, columns }: WalletTableParams) {
         <DataTableToolbar table={table} />
       </ClickableWalletTable>
       
-      <WalletDetailsModal
-        wallet={selectedWallet}
-        isOpen={isModalOpen}
-        onClose={closeModal}
-      />
+      {selectedWallet && (
+        <WalletDetailsModal
+          wallet={selectedWallet}
+          isOpen={isModalOpen}
+          onClose={closeModal}
+        />
+      )}
     </>
   );
 }

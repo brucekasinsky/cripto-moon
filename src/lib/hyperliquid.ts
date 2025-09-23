@@ -34,7 +34,7 @@ export class HyperliquidService {
       // Clear all cache
       this.cache.clear();
     }
-    console.log('Cache cleared for:', address || 'all');
+    // console.log('Cache cleared for:', address || 'all');
   }
 
   private static async makeRequest<T>(endpoint: string, body?: any): Promise<HyperliquidAPIResponse<T>> {
@@ -45,7 +45,7 @@ export class HyperliquidService {
       // Check cache first
       const cached = this.cache.get(cacheKey);
       if (cached && Date.now() - cached.timestamp < cached.ttl) {
-        console.log('Using cached data for:', cacheKey);
+    // console.log('Using cached data for:', cacheKey);
         return { success: true, data: cached.data };
       }
 
@@ -76,11 +76,11 @@ export class HyperliquidService {
       
       if (currentWeight + requestWeight > this.MAX_WEIGHT_PER_MINUTE) {
         const waitTime = Math.min(60000 - (now - Math.min(...this.requestWeights)), 10000); // Wait up to 10 seconds
-        console.log(`Rate limiting: current weight ${currentWeight}, need ${requestWeight}, waiting ${waitTime}ms`);
+    // console.log(`Rate limiting: current weight ${currentWeight}, need ${requestWeight}, waiting ${waitTime}ms`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
       }
 
-      console.log(`Making API request to: ${endpoint} (weight: ${requestWeight})`);
+    // console.log(`Making API request to: ${endpoint} (weight: ${requestWeight})`);
       const response = await fetch(`${HYPERLIQUID_API_BASE}${endpoint}`, {
         method: body ? 'POST' : 'GET',
         headers: {
@@ -120,7 +120,7 @@ export class HyperliquidService {
       const cacheKey = `${endpoint}_${JSON.stringify(body || {})}`;
       const cached = this.cache.get(cacheKey);
       if (cached) {
-        console.log('Using cached data due to error');
+    // console.log('Using cached data due to error');
         return { success: true, data: cached.data };
       }
       
@@ -136,7 +136,7 @@ export class HyperliquidService {
    */
   static async getAccountInfo(address: string): Promise<HyperliquidAPIResponse<any>> {
     try {
-      console.log('Fetching account info for:', address);
+    // console.log('Fetching account info for:', address);
       
       // Get account state
       const accountStateResponse = await this.makeRequest('/info', {
@@ -187,7 +187,7 @@ export class HyperliquidService {
    */
   static async getAccountEquity(address: string): Promise<HyperliquidAPIResponse<any>> {
     try {
-      console.log('Fetching account equity for:', address);
+    // console.log('Fetching account equity for:', address);
       
       // Get account state for equity information
       const accountStateResponse = await this.makeRequest('/info', {
@@ -259,10 +259,10 @@ export class HyperliquidService {
   /**
    * Get open positions for a wallet
    */
-  static async getOpenPositions(address: string): Promise<HyperliquidAPIResponse<any>> {
+  static async getOpenPositions(_address: string): Promise<HyperliquidAPIResponse<any>> {
     try {
       // Return mock data for now
-      console.log('Using mock data for open positions due to API issues');
+    // console.log('Using mock data for open positions due to API issues');
       
       const mockData = {
         positions: [
@@ -298,7 +298,7 @@ export class HyperliquidService {
    */
   static async getUserTransactions(address: string, startTime?: number): Promise<HyperliquidAPIResponse<any[]>> {
     try {
-      console.log('Fetching user transactions for:', address);
+    // console.log('Fetching user transactions for:', address);
       
       const fillsResponse = await this.makeRequest('/info', {
         type: 'userFills',
@@ -307,7 +307,7 @@ export class HyperliquidService {
       });
 
       if (fillsResponse.success && fillsResponse.data && Array.isArray(fillsResponse.data)) {
-        console.log('User transactions loaded:', fillsResponse.data.length);
+    // console.log('User transactions loaded:', fillsResponse.data.length);
         return { success: true, data: fillsResponse.data };
       }
 
@@ -326,7 +326,7 @@ export class HyperliquidService {
    */
   static async getAllWalletData(address: string, startTime?: number): Promise<HyperliquidAPIResponse<any>> {
     try {
-      console.log('Fetching all wallet data for:', address);
+    // console.log('Fetching all wallet data for:', address);
       
       // Get current user state for real-time data
       const userStateResponse = await this.makeRequest('/info', {
@@ -346,10 +346,10 @@ export class HyperliquidService {
         });
 
         // Get open orders for current positions
-        const openOrdersResponse = await this.makeRequest('/info', {
-          type: 'openOrders',
-          user: address
-        });
+        // const openOrdersResponse = await this.makeRequest('/info', {
+        //   type: 'openOrders',
+        //   user: address
+        // });
 
         // Get funding history for more accurate PnL calculation
         const fundingResponse = await this.makeRequest('/info', {
@@ -366,7 +366,7 @@ export class HyperliquidService {
         // Process fills data
         if (fillsResponse.success && fillsResponse.data && Array.isArray(fillsResponse.data)) {
           const fills = fillsResponse.data;
-          console.log('Processing fills:', fills.length, 'fills');
+    // console.log('Processing fills:', fills.length, 'fills');
           
           fills.forEach((fill: any) => {
             const date = new Date(parseInt(fill.time)).toISOString().split('T')[0];
@@ -392,7 +392,7 @@ export class HyperliquidService {
         // Process funding data
         if (fundingResponse.success && fundingResponse.data && Array.isArray(fundingResponse.data)) {
           const fundingHistory = fundingResponse.data;
-          console.log('Processing funding:', fundingHistory.length, 'funding events');
+    // console.log('Processing funding:', fundingHistory.length, 'funding events');
           
           fundingHistory.forEach((funding: any) => {
             const date = new Date(parseInt(funding.time)).toISOString().split('T')[0];
@@ -412,7 +412,7 @@ export class HyperliquidService {
         const totalPnL = Object.values(dailyData).reduce((sum, day) => sum + day.pnl + day.funding, 0);
         runningEquity = currentEquity - totalPnL;
         
-        console.log('Starting equity calculation:', { currentEquity, totalPnL, runningEquity });
+    // console.log('Starting equity calculation:', { currentEquity, totalPnL, runningEquity });
         
         // Add data points for each day
         sortedDates.forEach(date => {
@@ -439,7 +439,7 @@ export class HyperliquidService {
           });
         });
         
-        console.log('Generated chart data points:', chartData.length);
+    // console.log('Generated chart data points:', chartData.length);
 
         // Calculate derived values with better accuracy
         const totalValue = currentEquity;
@@ -515,7 +515,7 @@ export class HyperliquidService {
    */
   static async getAccountValueHistory(address: string, startTime?: number): Promise<HyperliquidAPIResponse<any>> {
     try {
-      console.log('Fetching account value history for:', address);
+    // console.log('Fetching account value history for:', address);
       
       // Try to get account state history - this might give us equity over time
       const accountStateResponse = await this.makeRequest('/info', {
@@ -675,7 +675,7 @@ export class HyperliquidService {
   /**
    * Get all trades for a wallet (complete history)
    */
-  static async getRealtimeTrades(address: string, accountId?: string): Promise<HyperliquidAPIResponse<any>> {
+  static async getRealtimeTrades(address: string, _accountId?: string): Promise<HyperliquidAPIResponse<any>> {
     try {
       // Try to fetch real trades from Hyperliquid API
       // Get all user fills (complete history)
@@ -717,7 +717,7 @@ export class HyperliquidService {
   /**
    * Get real-time positions for a wallet
    */
-  static async getRealtimePositions(address: string, accountId?: string): Promise<HyperliquidAPIResponse<any>> {
+  static async getRealtimePositions(_address: string, _accountId?: string): Promise<HyperliquidAPIResponse<any>> {
     // Mock real-time positions
     const mockPositions = [
       {
@@ -741,7 +741,7 @@ export class HyperliquidService {
    */
   static async getWalletEquityHistory(address: string, startTime?: number): Promise<HyperliquidAPIResponse<any[]>> {
     try {
-      console.log('Fetching wallet equity history for:', address);
+    // console.log('Fetching wallet equity history for:', address);
       
       // Get current balance first to use as baseline
       const balanceResponse = await this.makeRequest('/info', {
@@ -757,9 +757,9 @@ export class HyperliquidService {
                 });
 
                 if (balanceResponse.success && balanceResponse.data && fillsResponse.success && fillsResponse.data && Array.isArray(fillsResponse.data)) {
-                  const currentBalance = parseFloat((balanceResponse.data as any).marginSummary?.accountValue || '0');
+                  // const currentBalance = parseFloat((balanceResponse.data as any).marginSummary?.accountValue || '0');
                   const fills = fillsResponse.data;
-                  console.log('Current balance:', currentBalance, 'Fills:', fills.length);
+    // console.log('Current balance:', currentBalance, 'Fills:', fills.length);
                   
                   // Sort fills by time chronologically
                   const sortedFills = fills.sort((a: any, b: any) => parseInt(a.time || '0') - parseInt(b.time || '0'));
@@ -783,7 +783,7 @@ export class HyperliquidService {
                       pnl: 0,
                       timestamp: startDateKey
                     };
-                    console.log('Starting PnL calculation from:', startDateKey, 'based on first trade:', firstTradeDate.toISOString().split('T')[0]);
+    // console.log('Starting PnL calculation from:', startDateKey, 'based on first trade:', firstTradeDate.toISOString().split('T')[0]);
                   }
                   
                   // Process fills chronologically and accumulate PnL
@@ -804,14 +804,14 @@ export class HyperliquidService {
                   
                   // HYPERDASH NORMALIZATION: Normalize so the final value is 0
                   const finalPnL = cumulativePnL;
-                  console.log('Final cumulative PnL before normalization:', finalPnL);
+    // console.log('Final cumulative PnL before normalization:', finalPnL);
                   
                   // Adjust all values so the final PnL is 0
                   Object.keys(dailyData).forEach(key => {
                     dailyData[key].pnl = dailyData[key].pnl - finalPnL;
                   });
                   
-                  console.log('Applied Hyperdash normalization - final PnL now:', dailyData[Object.keys(dailyData)[Object.keys(dailyData).length - 1]]?.pnl);
+    // console.log('Applied Hyperdash normalization - final PnL now:', dailyData[Object.keys(dailyData)[Object.keys(dailyData).length - 1]]?.pnl);
                   
                   // Add current day point to show "today" on the chart
                   const today = new Date().toISOString().split('T')[0];
@@ -823,7 +823,7 @@ export class HyperliquidService {
                       pnl: 0, // Final normalized PnL should be 0
                       timestamp: today
                     };
-                    console.log('Added today point:', today, 'with PnL: 0 (normalized)');
+    // console.log('Added today point:', today, 'with PnL: 0 (normalized)');
                   }
                   
                   // Fill in all dates between first and last to avoid gaps in chart
@@ -867,9 +867,9 @@ export class HyperliquidService {
                       timestamp: day.timestamp
                     }));
         
-                  console.log('Wallet equity history processed:', equityHistory.length, 'days');
-                  console.log('Sample equity history data:', equityHistory.slice(0, 5));
-                  console.log('Final PnL values:', equityHistory.map(h => ({ date: h.timestamp, pnl: h.pnl })));
+    // console.log('Wallet equity history processed:', equityHistory.length, 'days');
+    // console.log('Sample equity history data:', equityHistory.slice(0, 5));
+    // console.log('Final PnL values:', equityHistory.map(h => ({ date: h.timestamp, pnl: h.pnl })));
                   return { success: true, data: equityHistory };
       }
 
@@ -888,7 +888,7 @@ export class HyperliquidService {
    */
   static async getWalletBalance(address: string): Promise<HyperliquidAPIResponse<any>> {
     try {
-      console.log('Fetching wallet balance for:', address);
+    // console.log('Fetching wallet balance for:', address);
       
       const response = await this.makeRequest('/info', {
         type: 'clearinghouseState',
@@ -903,7 +903,7 @@ export class HyperliquidService {
           pnlPercentage: parseFloat(accountState.marginSummary?.totalPnlPercent || '0')
         };
         
-        console.log('Wallet balance loaded:', balance);
+    // console.log('Wallet balance loaded:', balance);
         return { success: true, data: balance };
       }
 
@@ -922,7 +922,7 @@ export class HyperliquidService {
    */
   static async getWalletStats(address: string, startTime?: number): Promise<HyperliquidAPIResponse<any>> {
     try {
-      console.log('Fetching wallet stats for:', address);
+    // console.log('Fetching wallet stats for:', address);
       
       // Get fills for statistics
       const fillsResponse = await this.makeRequest('/info', {
@@ -959,7 +959,7 @@ export class HyperliquidService {
           totalVolume
         };
         
-        console.log('Wallet stats calculated:', stats);
+    // console.log('Wallet stats calculated:', stats);
         return { success: true, data: stats };
       }
 

@@ -72,8 +72,8 @@ export function useRealtimeTransactions({
       
       if (data.success !== false) {
         // API returned data successfully
-        console.log('Received transactions:', data.transactions?.length || 0);
-        console.log('First transaction sample:', data.transactions?.[0]);
+    // console.log('Received transactions:', data.transactions?.length || 0);
+    // console.log('First transaction sample:', data.transactions?.[0]);
         setTransactions(data.transactions || []);
         setLastUpdate(new Date());
         setError(null);
@@ -140,7 +140,7 @@ export function useRealtimeTransactions({
   // Initial fetch when modal opens - ALWAYS fetch when enabled changes to true
   useEffect(() => {
     if (enabled && walletId) {
-      console.log('Modal opened, fetching transactions for wallet:', walletId);
+    // console.log('Modal opened, fetching transactions for wallet:', walletId);
       fetchTransactions();
     }
   }, [enabled, walletId]); // Remove fetchTransactions from deps to avoid re-runs

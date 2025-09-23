@@ -1,20 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    console.log('Debugging Prisma...');
-    console.log('Prisma object:', typeof prisma);
-    console.log('Prisma keys:', Object.keys(prisma));
-    console.log('UserWallet exists:', 'userWallet' in prisma);
+    // console.log('Debugging Prisma...');
+    // console.log('Prisma object:', typeof prisma);
+    // console.log('Prisma keys:', Object.keys(prisma));
+    // console.log('UserWallet exists:', 'userWallet' in prisma);
     
     // Try to access the userWallet property
     if ('userWallet' in prisma) {
-      console.log('✅ userWallet property exists');
+    // console.log('✅ userWallet property exists');
       
       // Try to call findMany
       const result = await (prisma as any).userWallet.findMany();
-      console.log('✅ findMany works, result:', result);
+    // console.log('✅ findMany works, result:', result);
       
       return NextResponse.json({
         success: true,
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
         result: result
       });
     } else {
-      console.log('❌ userWallet property does not exist');
+    // console.log('❌ userWallet property does not exist');
       return NextResponse.json({
         success: false,
         error: 'userWallet property does not exist in prisma client',
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     }
     
   } catch (error) {
-    console.error('❌ Error debugging Prisma:', error);
+    // console.error('❌ Error debugging Prisma:', error);
     
     return NextResponse.json({
       success: false,

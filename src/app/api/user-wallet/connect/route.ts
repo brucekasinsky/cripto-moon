@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { UserWalletService } from '@/lib/user-wallet-service';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const { userId } = await auth();
     
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    const body = await _request.json();
     const { walletAddress, accountId, privateKey } = body;
 
     // Validate required fields
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       message: 'Wallet connected successfully'
     });
   } catch (error) {
-    console.error('Error in POST /api/user-wallet/connect:', error);
+    // console.error('Error in POST /api/user-wallet/connect:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(_request: NextRequest) {
   try {
     const { userId } = await auth();
     
@@ -86,7 +86,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Wallet disconnected successfully'
     });
   } catch (error) {
-    console.error('Error in DELETE /api/user-wallet/connect:', error);
+    // console.error('Error in DELETE /api/user-wallet/connect:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

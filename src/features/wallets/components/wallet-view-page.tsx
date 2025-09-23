@@ -10,7 +10,7 @@ export default async function WalletViewPage({
   walletId
 }: TWalletViewPageProps) {
   let wallet = null;
-  let pageTitle = 'Create New Wallet';
+  // let pageTitle = 'Create New Wallet';
 
   if (walletId !== 'new') {
     const data = await fakeWallets.getWalletById(Number(walletId));
@@ -18,7 +18,7 @@ export default async function WalletViewPage({
     if (!wallet) {
       notFound();
     }
-    pageTitle = `Edit Wallet`;
+    // pageTitle = `Edit Wallet`;
   }
 
   return <WalletForm />;

@@ -1,12 +1,11 @@
 'use client';
 
-import { DataTable } from '@/components/ui/table/data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { useReactTable, getCoreRowModel, getPaginationRowModel, getSortedRowModel, getFilteredRowModel, flexRender } from '@tanstack/react-table';
 import { useState, useEffect, useCallback } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { SortingState, ColumnFiltersState } from '@tanstack/react-table';
 import { HyperliquidService } from '@/lib/hyperliquid';
 import { toast } from 'sonner';
@@ -41,14 +40,14 @@ export function TransactionTable({ data: externalData, columns, walletAddress }:
     
     setIsLoading(true);
     try {
-      console.log('Fetching transactions for wallet:', walletAddress);
+    // console.log('Fetching transactions for wallet:', walletAddress);
       
       const startTime = Date.now() - (90 * 24 * 60 * 60 * 1000); // 90 days ago
       const fillsResponse = await HyperliquidService.getUserTransactions(walletAddress, startTime);
 
       if (fillsResponse.success && fillsResponse.data) {
         const fills = fillsResponse.data;
-        console.log('Raw fills data:', fills);
+    // console.log('Raw fills data:', fills);
         
         const transactionData: TransactionData[] = fills.map((fill: any, index: number) => ({
           id: `${fill.coin}-${fill.time}-${index}`,
@@ -61,12 +60,12 @@ export function TransactionTable({ data: externalData, columns, walletAddress }:
           status: 'copied' as const
         }));
 
-        console.log('Processed transactions:', transactionData.length);
+    // console.log('Processed transactions:', transactionData.length);
         setInternalData(transactionData);
         
         toast.success(`Loaded ${transactionData.length} transactions`);
       } else {
-        console.log('API failed, no transaction data available. Error:', fillsResponse.error);
+    // console.log('API failed, no transaction data available. Error:', fillsResponse.error);
         toast.error('Failed to load transactions');
       }
     } catch (error) {
@@ -83,8 +82,8 @@ export function TransactionTable({ data: externalData, columns, walletAddress }:
     }
   }, [walletAddress, externalData, fetchTransactions]);
 
-  console.log('TransactionTable received data:', data.length, 'rows');
-  console.log('TransactionTable first row:', data[0]);
+    // console.log('TransactionTable received data:', data.length, 'rows');
+    // console.log('TransactionTable first row:', data[0]);
   
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -110,8 +109,8 @@ export function TransactionTable({ data: externalData, columns, walletAddress }:
     },
   });
 
-  console.log('TransactionTable table rows:', table.getRowModel().rows.length);
-  console.log('TransactionTable table data:', table.getRowModel().rows[0]?.original);
+    // console.log('TransactionTable table rows:', table.getRowModel().rows.length);
+    // console.log('TransactionTable table data:', table.getRowModel().rows[0]?.original);
 
   if (isLoading) {
     return <DataTableSkeleton columnCount={7} rowCount={10} />;
