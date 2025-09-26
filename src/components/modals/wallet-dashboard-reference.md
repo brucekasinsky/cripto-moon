@@ -95,3 +95,5 @@ The dashboard is integrated into the existing modal system:
 - `wallet-details-modal.tsx` now uses `WalletDashboard` component
 - Fullscreen modal layout maintained
 - All existing functionality preserved
+
+
