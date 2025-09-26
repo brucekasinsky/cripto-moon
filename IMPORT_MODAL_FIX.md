@@ -77,3 +77,4 @@ Isso ajuda a identificar rapidamente se o problema foi resolvido.
 3. Verifique se outros modais similares têm o mesmo problema
 4. Implemente testes unitários para garantir que o comportamento está correto
 
+

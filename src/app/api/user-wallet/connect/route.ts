@@ -60,7 +60,7 @@ export async function POST(_request: NextRequest) {
   }
 }
 
-export async function DELETE(_request: NextRequest) {
+export async function DELETE() {
   try {
     const { userId } = await auth();
     

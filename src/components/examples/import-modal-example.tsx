@@ -19,7 +19,6 @@ export function ImportModalExample() {
 
   const handleImport = (config: ImportConfig) => {
     setLastImportConfig(config);
-    console.log('Import configuration:', config);
     
     // Aqui você processaria a importação usando o config.targetPath
     // que contém o valor REAL digitado pelo usuário
@@ -33,7 +32,7 @@ export function ImportModalExample() {
           <CardTitle>Import Modal Example</CardTitle>
           <p className="text-sm text-muted-foreground">
             Este exemplo demonstra como implementar corretamente um modal de configuração de importação
-            que respeita o input do usuário no campo "Target Path".
+            que respeita o input do usuário no campo &quot;Target Path&quot;.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -70,7 +69,7 @@ export function ImportModalExample() {
             </h4>
             <p className="text-sm text-red-700 dark:text-red-300">
               O modal atual sempre usa o nome do repositório como path, ignorando o input do usuário.
-              Independente do que você digite em "Target Path", ele sempre usa "next-shadcn-dashboard-starter".
+              Independente do que você digite em &quot;Target Path&quot;, ele sempre usa &quot;next-shadcn-dashboard-starter&quot;.
             </p>
           </div>
 
@@ -79,7 +78,7 @@ export function ImportModalExample() {
               ✅ Solução Implementada:
             </h4>
             <p className="text-sm text-green-700 dark:text-green-300">
-              O novo modal sempre usa o valor digitado pelo usuário no campo "Target Path".
+              O novo modal sempre usa o valor digitado pelo usuário no campo &quot;Target Path&quot;.
               O estado é atualizado corretamente com <code>handleTargetPathChange</code>.
             </p>
           </div>

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { UserWalletService } from '@/lib/user-wallet-service';
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const { userId } = await auth();
     
